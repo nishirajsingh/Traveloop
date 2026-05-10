@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Traveloop 🌍✈️
 
-## Getting Started
+A production-grade travel itinerary planning platform built with Next.js 15, TypeScript, Prisma, and PostgreSQL.
 
-First, run the development server:
+## Features
+
+- **Authentication** – Signup/Login with NextAuth + bcrypt password hashing
+- **Trip Management** – Create, edit, delete multi-city trips with public/private toggle
+- **Itinerary Builder** – Drag-and-drop city stops with activity management
+- **Dynamic City Search** – Teleport API / GeoDB Cities API integration
+- **Budget Analytics** – Recharts pie & bar charts with category breakdowns
+- **Packing Checklist** – Categorized items with packed/unpacked tracking
+- **Notes & Journal** – Trip notes with inline editing
+- **Public Sharing** – Read-only public trip pages with copy-to-plan CTA
+
+## Tech Stack
+
+- **Frontend**: Next.js 15 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui, Framer Motion
+- **State**: Zustand with localStorage persistence
+- **Forms**: React Hook Form + Zod validation
+- **Charts**: Recharts
+- **DnD**: @dnd-kit
+- **Backend**: Next.js API Routes, Prisma ORM, PostgreSQL (Neon)
+- **Auth**: NextAuth v5 (beta) with JWT sessions
+
+## Setup
+
+### 1. Clone & Install
+
+```bash
+git clone <repo>
+cd traveloop
+npm install
+```
+
+### 2. Environment Variables
+
+Copy `.env.example` to `.env` and fill in:
+
+```env
+DATABASE_URL="postgresql://user:password@host:5432/traveloop"
+NEXTAUTH_SECRET="your-secret-key"
+NEXTAUTH_URL="http://localhost:3000"
+GEODB_API_KEY=""   # Optional – falls back to Teleport API
+```
+
+### 3. Database Setup
+
+```bash
+npx prisma migrate dev --name init
+npx prisma db seed
+```
+
+### 4. Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Demo credentials**: `demo@traveloop.com` / `Demo1234`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deployment (Vercel + Neon)
 
-## Learn More
+1. Create a [Neon](https://neon.tech) PostgreSQL database
+2. Copy the connection string to `DATABASE_URL`
+3. Deploy to [Vercel](https://vercel.com) with environment variables set
+4. Run `npx prisma migrate deploy` after first deploy
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/
+│   ├── (auth)/          # Login, Signup pages
+│   ├── (dashboard)/     # Protected dashboard pages
+│   │   ├── dashboard/   # Main dashboard
+│   │   ├── trips/       # Trip list, create, detail
+│   │   ├── budget/      # Budget analytics
+│   │   ├── packing/     # Packing checklist
+│   │   └── notes/       # Notes & journal
+│   ├── api/             # API routes
+│   └── trip/public/     # Public trip pages
+├── components/
+│   ├── layout/          # Sidebar, Navbar
+│   ├── shared/          # Reusable components
+│   └── ui/              # shadcn/ui components
+├── lib/                 # Prisma client, Auth config
+├── store/               # Zustand stores
+├── types/               # TypeScript types
+├── utils/               # Helper functions
+└── validations/         # Zod schemas
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## API Routes
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Method | Route | Description |
+|--------|-------|-------------|
+| POST | `/api/auth/register` | Register new user |
+| GET/POST | `/api/trips` | List / create trips |
+| GET/PUT/DELETE | `/api/trips/:id` | Trip CRUD |
+| POST | `/api/stops` | Add stop to trip |
+| PUT/DELETE | `/api/stops/:id` | Update / delete stop |
+| GET | `/api/activities/search` | City search |
+| POST/DELETE | `/api/activities` | Activity CRUD |
+| GET | `/api/budget/:tripId` | Budget analytics |
+| GET/POST/PATCH/DELETE | `/api/packing` | Packing items |
+| GET/POST/PUT/DELETE | `/api/notes` | Trip notes |
