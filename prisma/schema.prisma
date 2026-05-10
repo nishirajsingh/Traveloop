@@ -34,6 +34,7 @@ model Trip {
   stops        Stop[]
   packingItems PackingItem[]
   notes        Note[]
+  budgetEntries BudgetEntry[]
 }
 
 model Stop {
@@ -67,6 +68,17 @@ model PackingItem {
   name      String
   category  String   @default("Essentials")
   isPacked  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  tripId    String
+  trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model BudgetEntry {
+  id        String   @id @default(cuid())
+  title     String
+  amount    Float
+  category  String   @default("Activities")
+  date      DateTime @default(now())
   createdAt DateTime @default(now())
   tripId    String
   trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)

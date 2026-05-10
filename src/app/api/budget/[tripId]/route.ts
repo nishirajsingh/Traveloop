@@ -13,6 +13,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     where: { id: tripId },
     include: {
       stops: { include: { activities: true } },
+      budgetEntries: { orderBy: { date: "desc" } },
     },
   });
 
@@ -20,26 +21,29 @@ export async function GET(_req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const breakdown: Record<string, number> = {
-    Hotel: 0,
-    Transport: 0,
-    Food: 0,
-    Activities: 0,
-  };
+  const CATEGORIES = ["Hotel", "Transport", "Food", "Activities"];
+  const breakdown: Record<string, number> = Object.fromEntries(CATEGORIES.map((c) => [c, 0]));
 
-  let totalSpent = 0;
+  // Sum from activity costs on stops
   for (const stop of trip.stops) {
     for (const activity of stop.activities) {
       const cat = breakdown[activity.category] !== undefined ? activity.category : "Activities";
-      breakdown[cat] = (breakdown[cat] || 0) + activity.cost;
-      totalSpent += activity.cost;
+      breakdown[cat] += activity.cost;
     }
   }
 
-  const categories = Object.entries(breakdown).map(([category, amount]) => ({
+  // Sum from manual budget entries
+  for (const entry of trip.budgetEntries) {
+    const cat = breakdown[entry.category] !== undefined ? entry.category : "Activities";
+    breakdown[cat] += entry.amount;
+  }
+
+  const totalSpent = Object.values(breakdown).reduce((a, b) => a + b, 0);
+
+  const categories = CATEGORIES.map((category) => ({
     category,
-    amount,
-    percentage: totalSpent > 0 ? Math.round((amount / totalSpent) * 100) : 0,
+    amount: breakdown[category],
+    percentage: totalSpent > 0 ? Math.round((breakdown[category] / totalSpent) * 100) : 0,
   }));
 
   return NextResponse.json({
@@ -51,5 +55,6 @@ export async function GET(_req: NextRequest, { params }: Params) {
       city: s.city,
       total: s.activities.reduce((sum, a) => sum + a.cost, 0),
     })),
+    entries: trip.budgetEntries,
   });
 }
