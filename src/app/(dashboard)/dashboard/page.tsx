@@ -4,10 +4,12 @@ import Link from "next/link";
 import {
   Plus, Map, DollarSign, Calendar, TrendingUp, ArrowRight,
   Globe, Package, BookOpen, Clock, CheckCircle2, AlertCircle,
-  Plane, BarChart2, Zap, MapPin, Receipt,
+  Plane, BarChart2, Zap, MapPin, Receipt, Sparkles,
 } from "lucide-react";
 import { formatCurrency, formatDate, getDaysBetween, getTripStatus } from "@/utils";
 import { TripStatusBadge } from "@/components/shared/TripStatusBadge";
+import { TripCountdown } from "@/components/shared/TripCountdown";
+import { HeroMessage } from "@/components/shared/HeroMessage";
 
 const TRENDING = [
   { city: "Tokyo",    country: "Japan",     state: "Kantō",       img: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&q=70", trend: "+24%", tag: "🔥 Hot" },
@@ -20,17 +22,10 @@ const TRENDING = [
 
 const QUICK_ACTIONS = [
   { href: "/trips/create", label: "Plan a Trip",    desc: "New itinerary",    icon: Plane,     color: "text-blue-500",    bg: "bg-blue-500/10" },
+  { href: "/recommendations", label: "AI Suggestions", desc: "Get recommendations", icon: Sparkles, color: "text-purple-500",  bg: "bg-purple-500/10" },
   { href: "/budget",       label: "Track Budget",   desc: "View analytics",   icon: BarChart2, color: "text-amber-500",   bg: "bg-amber-500/10" },
   { href: "/packing",      label: "Packing List",   desc: "Manage items",     icon: Package,   color: "text-violet-500",  bg: "bg-violet-500/10" },
-  { href: "/notes",        label: "Trip Notes",     desc: "Journal entry",    icon: BookOpen,  color: "text-emerald-500", bg: "bg-emerald-500/10" },
 ];
-
-function getGreeting() {
-  const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 17) return "Good afternoon";
-  return "Good evening";
-}
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -99,10 +94,6 @@ export default async function DashboardPage() {
     (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
   )[0];
 
-  const daysToNextTrip = nextTrip
-    ? Math.ceil((new Date(nextTrip.startDate).getTime() - Date.now()) / 86400000)
-    : null;
-
   // Total activities count
   const totalActivities = trips.reduce(
     (s, t) => s + t.stops.reduce((ss, stop) => ss + stop.activities.length, 0), 0
@@ -124,41 +115,18 @@ export default async function DashboardPage() {
         </div>
         <div className="relative z-10 flex items-center justify-between p-6 gap-4">
           <div>
-            <p className="section-label mb-1">{getGreeting()}</p>
+            <p className="section-label mb-1">Welcome back</p>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--color-text)]">
               {firstName} ✈️
             </h1>
-            <p className="text-[var(--color-muted)] text-sm mt-1">
-              {ongoingTrips.length > 0
-                ? `You have an ongoing trip — ${ongoingTrips[0].title}`
-                : daysToNextTrip !== null
-                ? `Your next trip is in ${daysToNextTrip} day${daysToNextTrip !== 1 ? "s" : ""}`
-                : "No upcoming trips. Start planning your next adventure!"}
-            </p>
+            <HeroMessage ongoingTrips={ongoingTrips} nextTrip={nextTrip} />
           </div>
           <Link href="/trips/create" className="btn-primary flex-shrink-0">
             <Plus className="w-4 h-4" /> New Trip
           </Link>
         </div>
 
-        {/* Next trip countdown banner */}
-        {nextTrip && daysToNextTrip !== null && daysToNextTrip <= 30 && (
-          <div className="relative z-10 mx-6 mb-5 flex items-center gap-3 p-3 rounded-xl bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20">
-            <div className="w-10 h-10 bg-[var(--color-primary)] rounded-xl flex items-center justify-center flex-shrink-0">
-              <Plane className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-[var(--color-text)] truncate">{nextTrip.title}</p>
-              <p className="text-xs text-[var(--color-muted)]">
-                {formatDate(nextTrip.startDate)} · {nextTrip._count.stops} stops
-              </p>
-            </div>
-            <div className="text-right flex-shrink-0">
-              <p className="text-2xl font-black mono text-[var(--color-primary)]">{daysToNextTrip}</p>
-              <p className="text-xs text-[var(--color-muted)]">days away</p>
-            </div>
-          </div>
-        )}
+        {nextTrip && <TripCountdown trip={nextTrip} />}
       </div>
 
       {/* ── 6 Stat Cards ── */}

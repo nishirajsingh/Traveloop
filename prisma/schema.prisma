@@ -8,14 +8,15 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  avatar    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  trips     Trip[]
+  id          String          @id @default(cuid())
+  name        String
+  email       String          @unique
+  password    String
+  avatar      String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  trips       Trip[]
+  preferences UserPreference?
 }
 
 model Trip {
@@ -94,4 +95,16 @@ model Note {
   updatedAt DateTime @updatedAt
   tripId    String
   trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model UserPreference {
+  id              String   @id @default(cuid())
+  travelStyle     String[] @default([])
+  interests       String[] @default([])
+  budgetRange     String   @default("medium")
+  preferredClimate String[] @default([])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

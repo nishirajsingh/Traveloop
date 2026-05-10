@@ -5,16 +5,18 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
   LayoutDashboard, Map, DollarSign, Package,
-  BookOpen, LogOut, Plane, X,
+  BookOpen, LogOut, Plane, X, Sparkles, Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/trips", label: "My Trips", icon: Map },
+  { href: "/recommendations", label: "AI Recommendations", icon: Sparkles },
   { href: "/budget", label: "Budget", icon: DollarSign },
   { href: "/packing", label: "Packing", icon: Package },
   { href: "/notes", label: "Notes", icon: BookOpen },
+  { href: "/preferences", label: "Preferences", icon: Settings },
 ];
 
 interface SidebarProps { onClose?: () => void; }

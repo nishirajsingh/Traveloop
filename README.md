@@ -8,6 +8,7 @@ A production-grade travel itinerary planning platform built with Next.js 15, Typ
 - **Trip Management** – Create, edit, delete multi-city trips with public/private toggle
 - **Itinerary Builder** – Drag-and-drop city stops with activity management
 - **Dynamic City Search** – Teleport API / GeoDB Cities API integration
+- **AI Recommendations** – Personalized destination, activity, and travel tips based on trip history
 - **Budget Analytics** – Recharts pie & bar charts with category breakdowns
 - **Packing Checklist** – Categorized items with packed/unpacked tracking
 - **Notes & Journal** – Trip notes with inline editing
@@ -77,6 +78,7 @@ src/
 │   ├── (dashboard)/     # Protected dashboard pages
 │   │   ├── dashboard/   # Main dashboard
 │   │   ├── trips/       # Trip list, create, detail
+│   │   ├── recommendations/ # AI-powered recommendations
 │   │   ├── budget/      # Budget analytics
 │   │   ├── packing/     # Packing checklist
 │   │   └── notes/       # Notes & journal
@@ -104,6 +106,8 @@ src/
 | PUT/DELETE | `/api/stops/:id` | Update / delete stop |
 | GET | `/api/activities/search` | City search |
 | POST/DELETE | `/api/activities` | Activity CRUD |
+| POST | `/api/recommendations` | AI-powered travel recommendations |
+| GET/POST | `/api/preferences` | User travel preferences |
 | GET | `/api/budget/:tripId` | Budget analytics |
 | GET/POST/PATCH/DELETE | `/api/packing` | Packing items |
 | GET/POST/PUT/DELETE | `/api/notes` | Trip notes |

@@ -22,11 +22,11 @@ export function makeSlug(userName: string, tripTitle: string, suffix?: string): 
 }
 
 export function formatDate(date: Date | string): string {
-  return new Date(date).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  const d = new Date(date);
+  const month = d.toLocaleDateString("en-US", { month: "short" });
+  const day = d.getDate();
+  const year = d.getFullYear();
+  return `${month} ${day}, ${year}`;
 }
 
 export function getDaysBetween(start: Date | string, end: Date | string): number {

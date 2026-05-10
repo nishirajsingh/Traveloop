@@ -1,5 +1,8 @@
+"use client";
+
 import { getTripStatus } from "@/utils";
 import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
 
 const statusConfig = {
   upcoming: { label: "Upcoming", className: "bg-blue-500/15 text-blue-600 border-blue-500/30 dark:text-blue-400" },
@@ -14,7 +17,12 @@ export function TripStatusBadge({
   startDate: Date | string;
   endDate: Date | string;
 }) {
-  const status = getTripStatus(startDate, endDate);
+  const [status, setStatus] = useState<"upcoming" | "ongoing" | "completed">("upcoming");
+
+  useEffect(() => {
+    setStatus(getTripStatus(startDate, endDate));
+  }, [startDate, endDate]);
+
   const config = statusConfig[status];
   return (
     <Badge variant="outline" className={config.className}>
