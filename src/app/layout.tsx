@@ -1,24 +1,25 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
-import { SessionProvider } from "next-auth/react";
+import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  weight: ["400", "500", "600"],
+});
 
 export const metadata: Metadata = {
-  title: "Traveloop – Plan Your Perfect Trip",
-  description: "A modern travel itinerary platform for planning multi-city trips",
+  title: "Traveloop – Your Journey, Full Circle",
+  description: "A premium travel itinerary platform for planning multi-city trips",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.variable} font-sans antialiased bg-[#0F172A] text-[#F8FAFC]`}>
-        <SessionProvider>
-          {children}
-          <Toaster richColors position="top-right" />
-        </SessionProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

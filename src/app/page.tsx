@@ -1,8 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { useTheme } from "@/app/providers";
+import { useEffect, useState } from "react";
 import {
   Plane, Map, DollarSign, Package, BookOpen, Globe,
-  ArrowRight, Star, Users, Zap, Shield,
-  CheckCircle, ChevronRight,
+  ArrowRight, Star, Users, Zap, Shield, Sun, Moon,
+  CheckCircle, ChevronRight, MapPin,
 } from "lucide-react";
 
 const GithubIcon = () => (
@@ -11,13 +15,39 @@ const GithubIcon = () => (
   </svg>
 );
 
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return <div className="w-9 h-9" />;
+  const isDark = theme === "dark";
+  return (
+    <button
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className="w-9 h-9 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] flex items-center justify-center text-[var(--color-muted)] hover:text-[var(--color-text)] hover:border-[var(--color-border-strong)] transition-all"
+      aria-label="Toggle theme"
+    >
+      <span className="theme-toggle-icon" style={{ transform: isDark ? "rotate(0deg)" : "rotate(180deg)" }}>
+        {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+      </span>
+    </button>
+  );
+}
+
 const features = [
-  { icon: Map, title: "Multi-City Itinerary", desc: "Plan trips across multiple cities with drag-and-drop stop reordering and a live route map.", color: "text-blue-400", bg: "bg-blue-500/10" },
-  { icon: DollarSign, title: "Budget Analytics", desc: "Track spending by category with real-time pie & bar charts. Add manual spend entries instantly.", color: "text-teal-400", bg: "bg-teal-500/10" },
-  { icon: Package, title: "Packing Checklist", desc: "Categorized packing lists with progress tracking so you never forget essentials again.", color: "text-purple-400", bg: "bg-purple-500/10" },
-  { icon: BookOpen, title: "Notes & Journal", desc: "Keep day-wise reminders and travel journal entries with inline editing.", color: "text-orange-400", bg: "bg-orange-500/10" },
-  { icon: Globe, title: "Public Sharing", desc: "Share read-only itineraries via a public link. Let others copy and customize your trip.", color: "text-pink-400", bg: "bg-pink-500/10" },
-  { icon: Zap, title: "Dynamic City Search", desc: "Search 100k+ cities powered by GeoDB & Teleport APIs with population data.", color: "text-yellow-400", bg: "bg-yellow-500/10" },
+  { icon: Map, title: "Multi-City Itinerary", desc: "Drag-and-drop stop reordering with a live route map across unlimited cities.", tag: "Planner" },
+  { icon: DollarSign, title: "Budget Analytics", desc: "Real-time pie & bar charts. Track spending by category with manual entries.", tag: "Finance" },
+  { icon: Package, title: "Packing Checklist", desc: "Categorized lists with progress tracking so you never forget essentials.", tag: "Utility" },
+  { icon: BookOpen, title: "Notes & Journal", desc: "Day-wise reminders and travel journal entries with inline editing.", tag: "Journal" },
+  { icon: Globe, title: "Public Sharing", desc: "Share read-only itineraries via a public link. Let others copy your trip.", tag: "Social" },
+  { icon: Zap, title: "Dynamic City Search", desc: "Search 100k+ cities powered by GeoDB & Teleport APIs.", tag: "Data" },
+];
+
+const destinations = [
+  { city: "Tokyo", country: "Japan", img: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80", days: "7 days" },
+  { city: "Santorini", country: "Greece", img: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600&q=80", days: "5 days" },
+  { city: "New York", country: "USA", img: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80", days: "6 days" },
+  { city: "Bali", country: "Indonesia", img: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80", days: "8 days" },
 ];
 
 const stats = [
@@ -28,30 +58,9 @@ const stats = [
 ];
 
 const contributors = [
-  {
-    name: "Nishiraj Singh Panwar",
-    role: "Leader",
-    github: "nishirajsingh",
-    avatar: "N",
-    gradient: "from-blue-500 to-teal-500",
-    badge: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  },
-  {
-    name: "Kunal Solanki",
-    role: "Member",
-    github: "kunalsolanki01",
-    avatar: "K",
-    gradient: "from-purple-500 to-pink-500",
-    badge: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  },
-  {
-    name: "Shankar Soni",
-    role: "Member",
-    github: "Shankar-soni-2006",
-    avatar: "S",
-    gradient: "from-orange-500 to-red-500",
-    badge: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-  },
+  { name: "Nishiraj Singh Panwar", role: "Leader", github: "nishirajsingh", avatar: "N" },
+  { name: "Kunal Solanki", role: "Member", github: "kunalsolanki01", avatar: "K" },
+  { name: "Shankar Soni", role: "Member", github: "Shankar-soni-2006", avatar: "S" },
 ];
 
 const steps = [
@@ -63,174 +72,161 @@ const steps = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#0F172A] text-[#F8FAFC] overflow-x-hidden">
+    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] overflow-x-hidden">
 
       {/* ── Navbar ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-dark border-b border-[#334155]/50">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[var(--color-surface)]/90 backdrop-blur-md border-b border-[var(--color-border)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-blue-500 rounded-xl flex items-center justify-center">
+            <div className="w-8 h-8 bg-[var(--color-primary)] rounded-xl flex items-center justify-center">
               <Plane className="w-4 h-4 text-white" />
             </div>
-            <span className="text-lg font-bold text-white">Traveloop</span>
+            <span className="text-lg font-bold tracking-tight">Traveloop</span>
           </div>
-          <div className="hidden md:flex items-center gap-6 text-sm text-[#94A3B8]">
-            <a href="#features" className="hover:text-white transition-colors">Features</a>
-            <a href="#how-it-works" className="hover:text-white transition-colors">How it works</a>
-            <a href="#team" className="hover:text-white transition-colors">Team</a>
+          <div className="hidden md:flex items-center gap-6 text-sm text-[var(--color-muted)]">
+            <a href="#features" className="hover:text-[var(--color-text)] transition-colors">Features</a>
+            <a href="#destinations" className="hover:text-[var(--color-text)] transition-colors">Destinations</a>
+            <a href="#how-it-works" className="hover:text-[var(--color-text)] transition-colors">How it works</a>
+            <a href="#team" className="hover:text-[var(--color-text)] transition-colors">Team</a>
           </div>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm text-[#94A3B8] hover:text-white transition-colors hidden sm:block">
-              Sign in
-            </Link>
-            <Link
-              href="/signup"
-              className="text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl transition-colors"
-            >
-              Get Started
-            </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link href="/login" className="btn-ghost hidden sm:inline-flex">Sign in</Link>
+            <Link href="/signup" className="btn-primary">Get Started <ArrowRight className="w-3.5 h-3.5" /></Link>
           </div>
         </div>
       </nav>
 
       {/* ── Hero ── */}
-      <section className="relative pt-32 pb-24 px-4 sm:px-6 overflow-hidden">
-        {/* Background blobs */}
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-40 right-10 w-64 h-64 bg-purple-500/8 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass border border-blue-500/30 text-xs text-blue-400 font-medium mb-8">
-            <Star className="w-3 h-3" />
-            Production-grade travel planning platform
-          </div>
-
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
-            Plan trips that{" "}
-            <span className="bg-gradient-to-r from-blue-400 via-teal-400 to-blue-400 bg-clip-text text-transparent">
-              actually happen
-            </span>
-          </h1>
-
-          <p className="text-lg sm:text-xl text-[#94A3B8] max-w-2xl mx-auto mb-10 leading-relaxed">
-            Traveloop is a modern travel itinerary platform. Build multi-city trips, track budgets,
-            manage packing lists, and share beautiful public itineraries — all in one place.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/signup"
-              className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold px-8 py-3.5 rounded-xl transition-all hover:scale-105 shadow-lg shadow-blue-500/25"
-            >
-              Start Planning Free
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              href="/login"
-              className="flex items-center gap-2 glass hover:bg-[#334155]/50 text-white font-medium px-8 py-3.5 rounded-xl transition-colors border border-[#334155]"
-            >
-              Sign In
-              <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          <p className="text-xs text-[#475569] mt-5">
-            No credit card required · Demo: demo@traveloop.com / Demo1234
-          </p>
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        {/* Background image */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1800&q=85"
+            alt="Travel hero"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 hero-video-overlay" />
         </div>
 
-        {/* Hero mockup card */}
-        <div className="max-w-4xl mx-auto mt-16 relative z-10">
-          <div className="glass rounded-2xl p-1 shadow-2xl shadow-black/40 border border-[#334155]">
-            <div className="bg-[#0F172A] rounded-xl p-6 space-y-4">
-              {/* Fake browser bar */}
-              <div className="flex items-center gap-2 pb-4 border-b border-[#1E293B]">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-500/60" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/60" />
-                </div>
-                <div className="flex-1 mx-4 h-6 bg-[#1E293B] rounded-lg flex items-center px-3">
-                  <span className="text-xs text-[#475569]">traveloop.app/trips/summer-europe</span>
-                </div>
-              </div>
-              {/* Fake trip UI */}
-              <div className="grid sm:grid-cols-3 gap-3">
-                {[
-                  { city: "Paris", country: "France", days: "6 days", cost: "$1,240", emoji: "🗼" },
-                  { city: "Rome", country: "Italy", days: "5 days", cost: "$980", emoji: "🏛️" },
-                  { city: "Barcelona", country: "Spain", days: "4 days", cost: "$860", emoji: "🌊" },
-                ].map((stop) => (
-                  <div key={stop.city} className="glass rounded-xl p-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="text-2xl">{stop.emoji}</span>
-                      <div>
-                        <p className="text-sm font-semibold text-white">{stop.city}</p>
-                        <p className="text-xs text-[#94A3B8]">{stop.country}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-[#94A3B8]">{stop.days}</span>
-                      <span className="text-xs font-medium text-teal-400">{stop.cost}</span>
-                    </div>
-                    <div className="mt-2 h-1 bg-[#334155] rounded-full">
-                      <div className="h-full bg-blue-500 rounded-full" style={{ width: "65%" }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="flex items-center justify-between px-1">
-                <div className="flex items-center gap-4 text-xs text-[#94A3B8]">
-                  <span className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-teal-400" /> 15 days total</span>
-                  <span className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-teal-400" /> 3 cities</span>
-                  <span className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-teal-400" /> $3,080 budget</span>
-                </div>
-                <span className="text-xs px-2 py-1 bg-teal-500/20 text-teal-400 rounded-full border border-teal-500/30">Upcoming</span>
-              </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16 w-full">
+          <div className="max-w-2xl">
+            {/* Eyebrow */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-xs text-white/80 font-medium mb-6">
+              <Star className="w-3 h-3 text-[#FBBF24]" />
+              Production-grade travel planning platform
             </div>
+
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight mb-6">
+              Your journey,<br />
+              <span className="text-[#FBBF24]">full circle.</span>
+            </h1>
+
+            <p className="text-lg text-white/70 max-w-lg mb-10 leading-relaxed">
+              Build multi-city itineraries, track budgets, manage packing lists,
+              and share beautiful public trips — all in one place.
+            </p>
+
+            {/* Travel Loop Search Bar */}
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-2 flex flex-col sm:flex-row gap-2 max-w-xl mb-8">
+              <div className="flex items-center gap-2 flex-1 bg-white/10 rounded-xl px-4 py-3">
+                <MapPin className="w-4 h-4 text-[#FBBF24] flex-shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Where are you going?"
+                  className="bg-transparent text-white placeholder:text-white/50 text-sm outline-none w-full"
+                />
+              </div>
+              <Link
+                href="/signup"
+                className="flex items-center justify-center gap-2 bg-[#FBBF24] hover:bg-[#F59E0B] text-[#1E293B] font-bold text-sm px-6 py-3 rounded-xl transition-colors whitespace-nowrap"
+              >
+                Start Planning <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            <p className="text-xs text-white/40">
+              No credit card required · Demo: demo@traveloop.com / Demo1234
+            </p>
           </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
+          <div className="w-px h-12 bg-gradient-to-b from-white/40 to-transparent" />
+          <span className="text-xs text-white/40 tracking-widest uppercase">Scroll</span>
         </div>
       </section>
 
-      {/* ── Stats ── */}
-      <section className="py-12 px-4 sm:px-6 border-y border-[#1E293B]">
+      {/* ── Stats strip ── */}
+      <section className="py-12 px-4 sm:px-6 border-b border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
           {stats.map(({ value, label }) => (
             <div key={label}>
-              <p className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent">
-                {value}
-              </p>
-              <p className="text-sm text-[#94A3B8] mt-1">{label}</p>
+              <p className="stat-number text-[var(--color-primary)]">{value}</p>
+              <p className="text-xs text-[var(--color-muted)] mt-1.5 section-label">{label}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── Features ── */}
-      <section id="features" className="py-24 px-4 sm:px-6">
+      {/* ── Destinations Bento ── */}
+      <section id="destinations" className="py-24 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-sm text-blue-400 font-medium mb-3 uppercase tracking-widest">Features</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Everything you need to travel smarter
-            </h2>
-            <p className="text-[#94A3B8] max-w-xl mx-auto">
-              From itinerary building to budget tracking — Traveloop has every tool a modern traveller needs.
-            </p>
+          <div className="flex items-end justify-between mb-10">
+            <div>
+              <p className="section-label mb-2">Destinations</p>
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
+                Where will you go next?
+              </h2>
+            </div>
+            <Link href="/signup" className="btn-ghost hidden sm:inline-flex">
+              Explore all <ChevronRight className="w-4 h-4" />
+            </Link>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {features.map(({ icon: Icon, title, desc, color, bg }) => (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {destinations.map(({ city, country, img, days }, i) => (
               <div
-                key={title}
-                className="glass rounded-2xl p-6 hover:border-blue-500/30 border border-transparent transition-all group"
+                key={city}
+                className={`dest-card relative overflow-hidden rounded-2xl cursor-pointer card-lift border border-[var(--color-border)] ${i === 0 ? "lg:col-span-2 lg:row-span-2 h-80 lg:h-auto" : "h-48"}`}
               >
-                <div className={`w-11 h-11 ${bg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <Icon className={`w-5 h-5 ${color}`} />
+                <img src={img} alt={city} className="dest-card-img absolute inset-0" />
+                <div className="absolute inset-0 photo-overlay" />
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <p className="text-white font-bold text-lg leading-tight">{city}</p>
+                  <div className="flex items-center justify-between mt-1">
+                    <p className="text-white/60 text-xs">{country}</p>
+                    <span className="text-xs mono bg-black/30 text-white/80 px-2 py-0.5 rounded-full">{days}</span>
+                  </div>
                 </div>
-                <h3 className="font-semibold text-white mb-2">{title}</h3>
-                <p className="text-sm text-[#94A3B8] leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Features ── */}
+      <section id="features" className="py-24 px-4 sm:px-6 bg-[var(--color-surface)]">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-12">
+            <p className="section-label mb-2">Features</p>
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight max-w-lg">
+              Everything you need to travel smarter
+            </h2>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {features.map(({ icon: Icon, title, desc, tag }) => (
+              <div key={title} className="surface-2 rounded-2xl p-6 card-lift group">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-10 h-10 bg-[var(--color-primary)]/10 rounded-xl flex items-center justify-center">
+                    <Icon className="w-5 h-5 text-[var(--color-primary)]" />
+                  </div>
+                  <span className="section-label text-[var(--color-primary)]">{tag}</span>
+                </div>
+                <h3 className="font-bold text-[var(--color-text)] mb-2">{title}</h3>
+                <p className="text-sm text-[var(--color-muted)] leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
@@ -238,24 +234,19 @@ export default function LandingPage() {
       </section>
 
       {/* ── How it works ── */}
-      <section id="how-it-works" className="py-24 px-4 sm:px-6 bg-[#0A1120]">
+      <section id="how-it-works" className="py-24 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-sm text-teal-400 font-medium mb-3 uppercase tracking-widest">How it works</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Up and running in minutes</h2>
-            <p className="text-[#94A3B8] max-w-xl mx-auto">Four simple steps to your perfect trip.</p>
+          <div className="mb-12">
+            <p className="section-label mb-2">Process</p>
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight">Up and running in minutes</h2>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {steps.map(({ step, title, desc }) => (
-              <div key={step} className="relative">
-                <div className="glass rounded-2xl p-6 h-full">
-                  <p className="text-4xl font-black bg-gradient-to-br from-blue-500/30 to-teal-500/30 bg-clip-text text-transparent mb-4">
-                    {step}
-                  </p>
-                  <h3 className="font-semibold text-white mb-2">{title}</h3>
-                  <p className="text-sm text-[#94A3B8] leading-relaxed">{desc}</p>
-                </div>
+              <div key={step} className="surface rounded-2xl p-6 card-lift">
+                <p className="mono text-4xl font-black text-[var(--color-primary)]/20 mb-4">{step}</p>
+                <h3 className="font-bold text-[var(--color-text)] mb-2">{title}</h3>
+                <p className="text-sm text-[var(--color-muted)] leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
@@ -263,15 +254,12 @@ export default function LandingPage() {
       </section>
 
       {/* ── Tech Stack ── */}
-      <section className="py-16 px-4 sm:px-6 border-y border-[#1E293B]">
+      <section className="py-14 px-4 sm:px-6 border-y border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="max-w-4xl mx-auto text-center">
-          <p className="text-xs text-[#475569] uppercase tracking-widest mb-6">Built with</p>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {["Next.js 15", "TypeScript", "Tailwind CSS", "Prisma", "PostgreSQL", "NextAuth", "Recharts", "dnd-kit", "Zustand", "Zod", "Leaflet"].map((tech) => (
-              <span
-                key={tech}
-                className="px-3 py-1.5 glass rounded-lg text-xs text-[#94A3B8] border border-[#334155] hover:text-white hover:border-blue-500/40 transition-colors"
-              >
+          <p className="section-label mb-6">Built with</p>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {["Next.js 15", "TypeScript", "Tailwind CSS v4", "Prisma", "PostgreSQL", "NextAuth v5", "Recharts", "dnd-kit", "Zustand", "Zod", "Leaflet", "Framer Motion"].map((tech) => (
+              <span key={tech} className="px-3 py-1.5 surface-2 rounded-lg text-xs text-[var(--color-muted)] mono hover:text-[var(--color-text)] transition-colors">
                 {tech}
               </span>
             ))}
@@ -279,95 +267,71 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Team / Contributors ── */}
+      {/* ── Team ── */}
       <section id="team" className="py-24 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-sm text-purple-400 font-medium mb-3 uppercase tracking-widest">Contributors</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Meet the team</h2>
-            <p className="text-[#94A3B8] max-w-xl mx-auto">
-              Built with passion by a dedicated team of developers.
-            </p>
+          <div className="mb-12">
+            <p className="section-label mb-2">Contributors</p>
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight">Meet the team</h2>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-6">
-            {contributors.map(({ name, role, github, avatar, gradient, badge }) => (
-              <div
-                key={github}
-                className="glass rounded-2xl p-6 text-center hover:border-blue-500/30 border border-transparent transition-all group"
-              >
-                {/* Avatar */}
-                <div className={`w-20 h-20 bg-gradient-to-br ${gradient} rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 group-hover:scale-105 transition-transform shadow-lg`}>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {contributors.map(({ name, role, github, avatar }) => (
+              <div key={github} className="surface rounded-2xl p-6 card-lift text-center">
+                <div className="w-16 h-16 bg-[var(--color-primary)] rounded-2xl flex items-center justify-center text-white text-2xl font-black mx-auto mb-4">
                   {avatar}
                 </div>
-
-                {/* Badge */}
-                <span className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full border ${badge} mb-3`}>
+                <div className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] mb-3">
                   {role === "Leader" ? <Star className="w-3 h-3" /> : <Users className="w-3 h-3" />}
                   {role}
-                </span>
-
-                <h3 className="font-semibold text-white mb-1">{name}</h3>
-                <p className="text-xs text-[#94A3B8] mb-4">@{github}</p>
-
+                </div>
+                <h3 className="font-bold text-[var(--color-text)] mb-1 text-sm">{name}</h3>
+                <p className="text-xs text-[var(--color-muted)] mb-4 mono">@{github}</p>
                 <a
                   href={`https://github.com/${github}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-xs text-[#94A3B8] hover:text-white glass px-4 py-2 rounded-xl transition-all hover:border-[#475569] border border-[#334155]"
+                  className="btn-ghost text-xs w-full justify-center"
                 >
-                  <GithubIcon />
-                  View Profile
+                  <GithubIcon /> View Profile
                 </a>
               </div>
             ))}
-          </div>
-
-          {/* Repo link */}
-          <div className="mt-10 text-center">
-            <a
-              href="https://github.com/nishirajsingh"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 glass px-6 py-3 rounded-xl text-sm text-[#94A3B8] hover:text-white border border-[#334155] hover:border-blue-500/40 transition-all"
-            >
-              <GithubIcon />
-              View on GitHub
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
           </div>
         </div>
       </section>
 
       {/* ── CTA ── */}
-      <section className="py-24 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="glass rounded-3xl p-12 relative overflow-hidden border border-blue-500/20">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-teal-500/5 pointer-events-none" />
-            <div className="absolute -top-16 -right-16 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
-
+      <section className="py-24 px-4 sm:px-6 bg-[var(--color-surface)]">
+        <div className="max-w-3xl mx-auto">
+          <div className="relative overflow-hidden rounded-3xl bg-[var(--color-primary)] p-12 text-center">
+            <div className="absolute inset-0 opacity-10">
+              <img
+                src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1200&q=60"
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            </div>
             <div className="relative z-10">
-              <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30">
-                <Plane className="w-8 h-8 text-white" />
+              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Plane className="w-7 h-7 text-white" />
               </div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-                Ready to plan your next adventure?
+              <h2 className="text-3xl sm:text-4xl font-black text-white mb-4 tracking-tight">
+                Ready for your next adventure?
               </h2>
-              <p className="text-[#94A3B8] mb-8 max-w-md mx-auto">
+              <p className="text-white/70 mb-8 max-w-md mx-auto">
                 Join Traveloop today and start building itineraries that make every trip unforgettable.
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Link
                   href="/signup"
-                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold px-8 py-3.5 rounded-xl transition-all hover:scale-105 shadow-lg shadow-blue-500/25 w-full sm:w-auto justify-center"
+                  className="flex items-center gap-2 bg-white text-[var(--color-primary)] font-bold px-8 py-3.5 rounded-xl transition-all hover:bg-white/90 w-full sm:w-auto justify-center"
                 >
-                  Get Started Free
-                  <ArrowRight className="w-4 h-4" />
+                  Get Started Free <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   href="/login"
-                  className="flex items-center gap-2 glass hover:bg-[#334155]/50 text-white font-medium px-8 py-3.5 rounded-xl transition-colors border border-[#334155] w-full sm:w-auto justify-center"
+                  className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-medium px-8 py-3.5 rounded-xl transition-colors border border-white/20 w-full sm:w-auto justify-center"
                 >
                   Sign In
                 </Link>
@@ -378,40 +342,37 @@ export default function LandingPage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-[#1E293B] py-10 px-4 sm:px-6">
+      <footer className="border-t border-[var(--color-border)] py-10 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 bg-blue-500 rounded-lg flex items-center justify-center">
+              <div className="w-7 h-7 bg-[var(--color-primary)] rounded-lg flex items-center justify-center">
                 <Plane className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="font-bold text-white">Traveloop</span>
+              <span className="font-bold">Traveloop</span>
             </div>
-
-            <div className="flex items-center gap-6 text-sm text-[#94A3B8]">
-              <a href="#features" className="hover:text-white transition-colors">Features</a>
-              <a href="#team" className="hover:text-white transition-colors">Team</a>
-              <Link href="/login" className="hover:text-white transition-colors">Sign In</Link>
-              <Link href="/signup" className="hover:text-white transition-colors">Sign Up</Link>
+            <div className="flex items-center gap-6 text-sm text-[var(--color-muted)]">
+              <a href="#features" className="hover:text-[var(--color-text)] transition-colors">Features</a>
+              <a href="#team" className="hover:text-[var(--color-text)] transition-colors">Team</a>
+              <Link href="/login" className="hover:text-[var(--color-text)] transition-colors">Sign In</Link>
+              <Link href="/signup" className="hover:text-[var(--color-text)] transition-colors">Sign Up</Link>
             </div>
-
-            <div className="flex items-center gap-3">
-              {contributors.map(({ github, avatar, gradient }) => (
+            <div className="flex items-center gap-2">
+              {contributors.map(({ github, avatar }) => (
                 <a
                   key={github}
                   href={`https://github.com/${github}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   title={`@${github}`}
-                  className={`w-8 h-8 bg-gradient-to-br ${gradient} rounded-full flex items-center justify-center text-white text-xs font-bold hover:scale-110 transition-transform`}
+                  className="w-8 h-8 bg-[var(--color-primary)] rounded-full flex items-center justify-center text-white text-xs font-bold hover:scale-110 transition-transform"
                 >
                   {avatar}
                 </a>
               ))}
             </div>
           </div>
-
-          <div className="mt-8 pt-6 border-t border-[#1E293B] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#475569]">
+          <div className="mt-8 pt-6 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[var(--color-muted)]">
             <p>© {new Date().getFullYear()} Traveloop. Built with ❤️ by the team.</p>
             <div className="flex items-center gap-1">
               <Shield className="w-3 h-3" />

@@ -6,10 +6,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Plane, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Loader2, ArrowRight } from "lucide-react";
 import { loginSchema, type LoginInput } from "@/validations";
 
 export default function LoginPage() {
@@ -32,55 +29,56 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="glass rounded-2xl p-8 shadow-2xl">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
-          <Plane className="w-5 h-5 text-white" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-white">Traveloop</h1>
-          <p className="text-sm text-[#94A3B8]">Sign in to your account</p>
-        </div>
+    <div>
+      <div className="mb-8">
+        <h1 className="text-3xl font-black tracking-tight text-[var(--color-text)] mb-2">Welcome back</h1>
+        <p className="text-[var(--color-muted)] text-sm">Sign in to continue planning your trips.</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
+          <label className="text-xs font-semibold text-[var(--color-text)] uppercase tracking-wide">Email</label>
+          <input
             type="email"
             placeholder="you@example.com"
-            className="bg-[#0F172A]/60 border-[#334155] focus:border-blue-500"
+            className="input-base"
             {...register("email")}
           />
-          {errors.email && <p className="text-red-400 text-xs">{errors.email.message}</p>}
+          {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
+          <label className="text-xs font-semibold text-[var(--color-text)] uppercase tracking-wide">Password</label>
+          <input
             type="password"
             placeholder="••••••••"
-            className="bg-[#0F172A]/60 border-[#334155] focus:border-blue-500"
+            className="input-base"
             {...register("password")}
           />
-          {errors.password && <p className="text-red-400 text-xs">{errors.password.message}</p>}
+          {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
         </div>
 
-        <Button
+        <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium"
+          className="btn-primary w-full justify-center py-3 mt-2"
         >
-          {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-          Sign In
-        </Button>
+          {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+          Sign In <ArrowRight className="w-4 h-4" />
+        </button>
       </form>
 
-      <p className="text-center text-sm text-[#94A3B8] mt-6">
+      <div className="mt-6 pt-6 border-t border-[var(--color-border)]">
+        <p className="text-xs text-[var(--color-muted)] text-center mb-3">Demo credentials</p>
+        <div className="surface-2 rounded-xl p-3 text-center">
+          <p className="mono text-xs text-[var(--color-text)]">demo@traveloop.com</p>
+          <p className="mono text-xs text-[var(--color-muted)]">Demo1234</p>
+        </div>
+      </div>
+
+      <p className="text-center text-sm text-[var(--color-muted)] mt-6">
         Don&apos;t have an account?{" "}
-        <Link href="/signup" className="text-blue-400 hover:text-blue-300 font-medium">
+        <Link href="/signup" className="text-[var(--color-primary)] font-semibold hover:underline">
           Sign up
         </Link>
       </p>

@@ -1,9 +1,24 @@
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
     minimumFractionDigits: 0,
   }).format(amount);
+}
+
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 60);
+}
+
+export function makeSlug(userName: string, tripTitle: string, suffix?: string): string {
+  const base = `${slugify(userName)}-${slugify(tripTitle)}`;
+  return suffix ? `${base}-${suffix}` : base;
 }
 
 export function formatDate(date: Date | string): string {

@@ -5,17 +5,30 @@ import { tripSchema } from "@/validations";
 
 type Params = { params: Promise<{ id: string }> };
 
+async function findTrip(idOrSlug: string) {
+  // Try slug first, then fall back to id
+  return (
+    await prisma.trip.findUnique({ where: { slug: idOrSlug } }) ??
+    await prisma.trip.findUnique({ where: { id: idOrSlug } })
+  );
+}
+
 export async function GET(_req: NextRequest, { params }: Params) {
   const { id } = await params;
   const session = await auth();
 
   const trip = await prisma.trip.findUnique({
+    where: { slug: id },
+    include: {
+      stops: { include: { activities: true }, orderBy: { order: "asc" } },
+      packingItems: { orderBy: { createdAt: "asc" } },
+      notes: { orderBy: { date: "desc" } },
+      user: { select: { id: true, name: true, email: true } },
+    },
+  }) ?? await prisma.trip.findUnique({
     where: { id },
     include: {
-      stops: {
-        include: { activities: true },
-        orderBy: { order: "asc" },
-      },
+      stops: { include: { activities: true }, orderBy: { order: "asc" } },
       packingItems: { orderBy: { createdAt: "asc" } },
       notes: { orderBy: { date: "desc" } },
       user: { select: { id: true, name: true, email: true } },
@@ -35,7 +48,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const trip = await prisma.trip.findUnique({ where: { id } });
+  const trip = await findTrip(id);
   if (!trip || trip.userId !== session.user.id) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -48,7 +61,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
   const { coverImage, description, ...rest } = parsed.data;
   const updated = await prisma.trip.update({
-    where: { id },
+    where: { id: trip.id },
     data: {
       ...rest,
       startDate: new Date(rest.startDate),
@@ -65,11 +78,11 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const trip = await prisma.trip.findUnique({ where: { id } });
+  const trip = await findTrip(id);
   if (!trip || trip.userId !== session.user.id) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  await prisma.trip.delete({ where: { id } });
+  await prisma.trip.delete({ where: { id: trip.id } });
   return NextResponse.json({ success: true });
 }

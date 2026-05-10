@@ -8,6 +8,7 @@ export interface User {
 
 export interface Trip {
   id: string;
+  slug?: string | null;
   title: string;
   description?: string | null;
   startDate: Date | string;
@@ -78,6 +79,8 @@ export interface CitySearchResult {
   name: string;
   country: string;
   countryCode: string;
+  region?: string;
+  regionCode?: string;
   population?: number;
   latitude?: number;
   longitude?: number;
