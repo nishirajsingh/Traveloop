@@ -78,10 +78,58 @@ After logging in:
 
 ## Deployment (Vercel + Neon)
 
+### 1. Database Setup
+
 1. Create a [Neon](https://neon.tech) PostgreSQL database
-2. Copy the connection string to `DATABASE_URL`
-3. Deploy to [Vercel](https://vercel.com) with environment variables set
-4. Run `npx prisma migrate deploy` after first deploy
+2. Copy the connection string
+
+### 2. Vercel Deployment
+
+1. Push your code to GitHub
+2. Import project to [Vercel](https://vercel.com)
+3. Add environment variables in Vercel dashboard:
+
+```env
+DATABASE_URL=postgresql://user:pass@host.neon.tech:5432/traveloop
+NEXTAUTH_URL=https://your-app.vercel.app
+NEXTAUTH_SECRET=your-generated-secret
+```
+
+**IMPORTANT**: Set `NEXTAUTH_URL` to your actual Vercel URL (e.g., `https://traveloop.vercel.app`)
+
+### 3. Run Migrations
+
+After first deployment, run migrations:
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Login and link project
+vercel login
+vercel link
+
+# Run migrations
+vercel env pull .env.local
+npx prisma migrate deploy
+```
+
+Or use Vercel's terminal in the dashboard.
+
+### 4. Generate Secret
+
+Generate a secure `NEXTAUTH_SECRET`:
+
+```bash
+openssl rand -base64 32
+```
+
+### Environment Variables Checklist
+
+- ✅ `DATABASE_URL` - Your Neon PostgreSQL connection string
+- ✅ `NEXTAUTH_URL` - Your production URL (https://your-app.vercel.app)
+- ✅ `NEXTAUTH_SECRET` - Random 32-character string
+- ⚠️ `GEODB_API_KEY` - Optional (for city search)
 
 ## Troubleshooting
 

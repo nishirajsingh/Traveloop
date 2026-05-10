@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useTheme } from "@/app/providers";
-import { useEffect } from "react";
 import {
   LayoutDashboard, Map, DollarSign, Package, BookOpen,
   LogOut, Plane, X, Menu, Plus, Sun, Moon, ChevronRight,
@@ -14,12 +13,16 @@ import {
 import { cn } from "@/lib/utils";
 import { getInitials } from "@/utils";
 
+import { Sparkles, Settings } from "lucide-react";
+
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/trips", label: "My Trips", icon: Map },
+  { href: "/recommendations", label: "AI Recommendations", icon: Sparkles },
   { href: "/budget", label: "Budget", icon: DollarSign },
   { href: "/packing", label: "Packing", icon: Package },
   { href: "/notes", label: "Notes", icon: BookOpen },
+  { href: "/preferences", label: "Preferences", icon: Settings },
 ];
 
 const BREADCRUMB_STEPS = [
@@ -281,6 +284,26 @@ function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center h-screen bg-[var(--color-bg)]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return null;
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-[var(--color-bg)]">
