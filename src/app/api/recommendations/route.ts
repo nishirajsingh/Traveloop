@@ -50,18 +50,18 @@ export async function POST(req: NextRequest) {
 }
 
 function generateRecommendations(user: any) {
-  const visitedCities = new Set(
-    user.trips.flatMap((trip: any) => trip.stops.map((stop: any) => stop.city))
+  const visitedCities = new Set<string>(
+    user.trips.flatMap((trip: any) => trip.stops.map((stop: any) => stop.city as string))
   );
-  const visitedCountries = new Set(
+  const visitedCountries = new Set<string>(
     user.trips.flatMap((trip: any) =>
-      trip.stops.map((stop: any) => stop.country)
+      trip.stops.map((stop: any) => stop.country as string)
     )
   );
 
   const activityCategories = user.trips.flatMap((trip: any) =>
     trip.stops.flatMap((stop: any) =>
-      stop.activities.map((act: any) => act.category)
+      stop.activities.map((act: any) => act.category as string)
     )
   );
 
